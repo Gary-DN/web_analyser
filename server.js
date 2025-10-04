@@ -37,9 +37,14 @@ function getTagContent(html, tagName) {
  * @param {string} name The value of the name attribute to match (e.g. "description").
  * @returns {string} The content attribute value, or an empty string if not found.
  */
-function getMetaContent(html, name) {
-  const regex = new RegExp(`<meta[^>]*name=["']${name}["'][^>]*content=["']([^"']*)["'][^>]*>`, 'i');
-  const match = html.match(regex);
+function getMetaContent(html, key) {
+  // name attribute
+  let regex = new RegExp(`<meta[^>]*name=["']${key}["'][^>]*content=["']([^"']*)["'][^>]*>`, 'i');
+  let match = html.match(regex);
+  if (match) return match[1];
+  // property attribute
+  regex = new RegExp(`<meta[^>]*property=["']${key}["'][^>]*content=["']([^"']*)["'][^>]*>`, 'i');
+  match = html.match(regex);
   return match ? match[1] : '';
 }
 
@@ -63,6 +68,19 @@ function countWordsInPTags(html) {
   }
   return wordCount;
 }
+
+// helper to get the document title with fallbacks
+function getDocumentTitle(html) {
+  const titleTag = getTagContent(html, 'title');
+  if (titleTag) return titleTag;
+  const ogTitle = getMetaContent(html, 'og:title');
+  if (ogTitle) return ogTitle;
+  return getMetaContent(html, 'title');
+}
+
+// in handleAnalysis:
+const title = getDocumentTitle(html);
+const metaDescription = getMetaContent(html, 'description');
 
 /**
  * Handle an analysis request. Fetches the remote page, extracts data and
