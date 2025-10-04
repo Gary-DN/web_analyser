@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Website Analysis Tool</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      line-height: 1.5;
+    }
+    form {
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      margin-top: 0.5rem;
+    }
+    pre {
+      background: #f5f5f5;
+      padding: 1rem;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Website Analysis Tool</h1>
+  <p>This tool fetches basic SEO data from any publicly accessible URL. Enter a domain below (e.g. <strong>https://example.com</strong>) and click <em>Analyze</em> to view its meta title, description and word count. It’s designed to be extendable – additional data points can easily be added in future by modifying the server’s analysis logic or integrating third‑party APIs.</p>
+  <form id="analysis-form">
+    <label for="url-input">Website URL</label>
+    <input type="text" id="url-input" placeholder="https://example.com" required />
+    <button type="submit">Analyze</button>
+  </form>
+  <div id="results"></div>
+  <h2>Additional Data Points To Consider</h2>
+  <ul>
+    <li><strong>Heading structure:</strong> Check if the page uses a proper hierarchy of &lt;h1&gt;–&lt;h4&gt; tags and whether the main keyword appears in the H1 heading【286074167057947†L110-L115】.</li>
+    <li><strong>URL length and structure:</strong> Evaluate if URLs are short, descriptive and include target keywords【286074167057947†L115-L116】.</li>
+    <li><strong>Image optimisation:</strong> Extract &lt;img&gt; tags to ensure they have descriptive <code>alt</code> attributes and compressed file sizes【286074167057947†L116-L118】.</li>
+    <li><strong>Mobile usability and page speed:</strong> Measure page load times and check whether the site is responsive and uses HTTPS【286074167057947†L118-L123】.</li>
+    <li><strong>Internal links:</strong> Count the number of internal links and verify that anchor text is descriptive【286074167057947†L121-L124】.</li>
+    <li><strong>Schema markup and structured data:</strong> Detect presence of JSON‑LD scripts for rich results and Open Graph/Twitter tags【286074167057947†L122-L125】.</li>
+    <li><strong>Readability and duplicate content:</strong> Analyze the content for concise paragraphs, proper use of semantic keywords and duplication across pages【286074167057947†L125-L131】.</li>
+  </ul>
+  <script>
+    const form = document.getElementById('analysis-form');
+    const resultsContainer = document.getElementById('results');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const url = document.getElementById('url-input').value.trim();
+      if (!url) return;
+      resultsContainer.innerHTML = '<p>Analyzing…</p>';
+      try {
+        const res = await fetch(`/analyze?url=${encodeURIComponent(url)}`);
+        const data = await res.json();
+        if (data.error) {
+          resultsContainer.innerHTML = `<p style="color:red;">Error: ${data.error}</p>`;
+        } else {
+          const pretty = JSON.stringify(data, null, 2);
+          resultsContainer.innerHTML = `<h3>Analysis Results</h3><pre>${pretty}</pre>`;
+        }
+      } catch (err) {
+        resultsContainer.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
+      }
+    });
+  </script>
+</body>
+</html>
